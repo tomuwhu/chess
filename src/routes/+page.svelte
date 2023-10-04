@@ -7,6 +7,7 @@ const game = new Game()
 // import jsChessEngine from 'js-chess-engine'
 // const game = new jsChessEngine.Game()
 
+const aidepth = 3
 const cols = "ABCDEFGH"
 const rows = "87654321"
 var gl = false, vl = ['', '']
@@ -33,12 +34,15 @@ const drop = (i, j, row, col) => {
         if (chjson.castling.whiteLong && j == 2)
             table[i][0] = " ", tc[i][0] = "n", table[i][3] = "♜", tc[i][3] = "w"
     }
+    if (!gl && mit[0]=='♟' && j == 0) {
+        table[j][i] = "♛"
+    }
     game.move(from[0], col + row)
     gl = true
     setTimeout(()=> {
         var lc = chjson.castling.blackShort, rc = chjson.castling.blackLong
         if (!game.exportJson().isFinished) {
-            vl = Object.entries(game.aiMove(3))[0]
+            vl = Object.entries(game.aiMove(aidepth))[0]
             var xf = cols.indexOf(vl[0][0])
             var yf = rows.indexOf(vl[0][1])
             var xt = cols.indexOf(vl[1][0])
@@ -55,6 +59,9 @@ const drop = (i, j, row, col) => {
             tc[yf][xf] = "n"
             table[yt][xt] = vmit[0]
             tc[yt][xt] = vmit[1]
+            if (gl && vmit[0]=='♟' && yt == 7) {
+                table[yt][xt] = "♛"
+            }
             gl = false
         }
         chjson = game.exportJson()
