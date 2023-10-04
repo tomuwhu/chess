@@ -10,10 +10,10 @@ const game = new jsChessEngine.Game()
 const cols = "ABCDEFGH"
 const rows = "87654321"
 var gl = false, vl = ['', '']
-var table = ["♜♞♝♛♚♝♞♜", "♟♟♟♟♟♟♟♟♟", "        ", "        ",
-"        ", "        ", "♟♟♟♟♟♟♟♟♟", "♜♞♝♛♚♝♞♜"].map(v => v.split(""))
-var tc = ['bbbbbbbb','bbbbbbbb','nnnnnnnn','nnnnnnnn',
-'nnnnnnnn','nnnnnnnn','wwwwwwww','wwwwwwww'].map(v => v.split(""))
+var table = "♜♞♝♛♚♝♞♜|♟♟♟♟♟♟♟♟♟|        |        |        |        |♟♟♟♟♟♟♟♟♟|♜♞♝♛♚♝♞♜"
+    .split("|").map(v => v.split(""))
+var tc = 'bbbbbbbb|bbbbbbbb|nnnnnnnn|nnnnnnnn|nnnnnnnn|nnnnnnnn|wwwwwwww|wwwwwwww'
+    .split("|").map(v => v.split(""))
 var pm = [], chjson = {halfMove: 1, castling: {}}
 var from = ['', 0, 0]
 const f = (i, j, row, col) => {
@@ -37,24 +37,26 @@ const drop = (i, j, row, col) => {
     gl = true
     setTimeout(()=> {
         var lc = chjson.castling.blackShort, rc = chjson.castling.blackLong
-        vl = Object.entries(game.aiMove(3))[0]
-        var xf = cols.indexOf(vl[0][0])
-        var yf = rows.indexOf(vl[0][1])
-        var xt = cols.indexOf(vl[1][0])
-        var yt = rows.indexOf(vl[1][1])
-        var vmit = [table[yf][xf], tc[yf][xf]]
-        var vut = [table[yt][xt], tc[yt][xt]]
-        if (vmit[0]=='♚' && (yt == 7 || yt == 0)) {
-            if (lc && xt == 6)
-                table[yt][7] = " ", tc[yt][7] = "n", table[yt][5] = "♜", tc[yt][5] = "b"
-            if (rc && xt == 2)
-                table[yt][0] = " ", tc[yt][0] = "n", table[yt][3] = "♜", tc[yt][3] = "b"
+        if (!game.exportJson().isFinished) {
+            vl = Object.entries(game.aiMove(0))[0]
+            var xf = cols.indexOf(vl[0][0])
+            var yf = rows.indexOf(vl[0][1])
+            var xt = cols.indexOf(vl[1][0])
+            var yt = rows.indexOf(vl[1][1])
+            var vmit = [table[yf][xf], tc[yf][xf]]
+            var vut = [table[yt][xt], tc[yt][xt]]
+            if (vmit[0]=='♚' && (yt == 7 || yt == 0)) {
+                if (lc && xt == 6)
+                    table[yt][7] = " ", tc[yt][7] = "n", table[yt][5] = "♜", tc[yt][5] = "b"
+                if (rc && xt == 2)
+                    table[yt][0] = " ", tc[yt][0] = "n", table[yt][3] = "♜", tc[yt][3] = "b"
+            }
+            table[yf][xf] = " "
+            tc[yf][xf] = "n"
+            table[yt][xt] = vmit[0]
+            tc[yt][xt] = vmit[1]
+            gl = false
         }
-        table[yf][xf] = " "
-        tc[yf][xf] = "n"
-        table[yt][xt] = vmit[0]
-        tc[yt][xt] = vmit[1]
-        gl = false
         chjson = game.exportJson()
     }, 500)
 }
