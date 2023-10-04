@@ -38,7 +38,7 @@ const drop = (i, j, row, col) => {
     setTimeout(()=> {
         var lc = chjson.castling.blackShort, rc = chjson.castling.blackLong
         if (!game.exportJson().isFinished) {
-            vl = Object.entries(game.aiMove(0))[0]
+            vl = Object.entries(game.aiMove(3))[0]
             var xf = cols.indexOf(vl[0][0])
             var yf = rows.indexOf(vl[0][1])
             var xt = cols.indexOf(vl[1][0])
