@@ -1,7 +1,12 @@
 <script>
-import CE from 'js-chess-engine'
-const { Game, move, status, moves, aiMove, getFen } = CE
+// dev mode
+import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine'
 const game = new Game()
+
+// build mode
+// import jsChessEngine from 'js-chess-engine'
+// const game = new jsChessEngine.Game()
+
 const cols = "ABCDEFGH"
 const rows = "87654321"
 var gl = false
@@ -22,12 +27,17 @@ const drop = (i, j, row, col) => {
     tc[from[1]][from[2]] = "n"
     table[i][j] = mit[0]
     tc[i][j] = mit[1]
-    console.log(mit, from, i, j)
     if (mit[0]=='♚' && i == 7 && j == 6) {
         table[7][7] = " "
         tc[7][7] = "n"
         table[7][5] = "♜"
         tc[7][5] = "w"
+    }
+    if (mit[0]=='♚' && i == 7 && j == 2) {
+        table[7][0] = " "
+        tc[7][0] = "n"
+        table[7][3] = "♜"
+        tc[7][3] = "w"
     }
 
     game.move(from[0], col + row)
@@ -48,6 +58,7 @@ const drop = (i, j, row, col) => {
     }, 500)
 }
 </script>
+<h1>Sakk</h1>
 <table>
     <tr>
         <td class="c"></td>
@@ -84,6 +95,9 @@ const drop = (i, j, row, col) => {
     </tr>
 </table>
 <style>
+h1, td {
+    text-align: center;
+}
 table {
     user-select: none;
     margin: auto;
@@ -92,11 +106,10 @@ table {
 td {
     width: 50px;
     height: 50px;
-    background-color: white;
-    text-align: center;
+    background-color: rgb(198, 198, 198);
 }
 td.s1 {
-    background-color: black;
+    background-color: rgb(65, 65, 65);
 }
 td span {
     font-size: 40px;
@@ -127,10 +140,10 @@ td.c {
     height: 20px;
 }
 td.x {
-    background-color: lightgray;
+    background-color: rgb(190, 229, 187);
 }
 
 td.s1.x {
-    background-color: darkslategray;
+    background-color: rgb(39, 95, 73);
 }
 </style>
