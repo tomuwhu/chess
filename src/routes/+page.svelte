@@ -1,5 +1,6 @@
 <script>
-import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine'
+import CE from 'js-chess-engine'
+const { Game, move, status, moves, aiMove, getFen } = CE
 const game = new Game()
 const cols = "ABCDEFGH"
 const rows = "87654321"
