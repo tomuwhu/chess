@@ -1,11 +1,11 @@
 <script>
 // dev mode
-// import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine'
-// const game = new Game()
+import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine'
+const game = new Game()
 
 // build mode
-import jsChessEngine from 'js-chess-engine'
-const game = new jsChessEngine.Game()
+// import jsChessEngine from 'js-chess-engine'
+// const game = new jsChessEngine.Game()
 
 const cols = "ABCDEFGH"
 const rows = "87654321"
