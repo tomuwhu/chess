@@ -1,70 +1,38 @@
 <script>
 // dev mode
-import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine'
-const game = new Game()
-
+// import { Game, move, status, moves, aiMove, getFen } from 'js-chess-engine'
+// const game = new Game()
 // build mode
-// import jsChessEngine from 'js-chess-engine'
-// const game = new jsChessEngine.Game()
-
+import jsChessEngine from 'js-chess-engine'
+const game = new jsChessEngine.Game()
+var cf = new Map([
+        ['p', '♟'],['r', '♜'],['n', '♞'],['b', '♝'],['q', '♛'],['k', '♚'], [null, ' ']
+    ])
+const getf = (p) => {
+    if (!p) return " "
+    return cf.get(p.toLowerCase())
+}
+var chjson = game.exportJson()
 const aidepth = 3
 const cols = "ABCDEFGH"
 const rows = "87654321"
 var gl = false, vl = ['', '']
-var table = "♜♞♝♛♚♝♞♜|♟♟♟♟♟♟♟♟♟|        |        |        |        |♟♟♟♟♟♟♟♟♟|♜♞♝♛♚♝♞♜"
-    .split("|").map(v => v.split(""))
-var tc = 'bbbbbbbb|bbbbbbbb|nnnnnnnn|nnnnnnnn|nnnnnnnn|nnnnnnnn|wwwwwwww|wwwwwwww'
-    .split("|").map(v => v.split(""))
-var pm = [], chjson = {halfMove: 1, castling: {}}
+var pm = []
 var from = ['', 0, 0]
 const f = (i, j, row, col) => {
     from = [col+row, i, j]
     pm = game.moves(from[0])
 }
-const drop = (i, j, row, col) => {
-    var mit = [table[from[1]][from[2]], tc[from[1]][from[2]]]
-    var ut = [table[i][j], tc[i][j]]
-    table[from[1]][from[2]] = " "
-    tc[from[1]][from[2]] = "n"
-    table[i][j] = mit[0]
-    tc[i][j] = mit[1]
-    if (mit[0]=='♚' && (i == 7 || i == 0)) {
-        if (chjson.castling.whiteShort && j == 6) 
-            table[i][7] = " ", tc[i][7] = "n", table[i][5] = "♜", tc[i][5] = "w"
-        if (chjson.castling.whiteLong && j == 2)
-            table[i][0] = " ", tc[i][0] = "n", table[i][3] = "♜", tc[i][3] = "w"
-    }
-    if (!gl && mit[0]=='♟' && j == 0) {
-        table[j][i] = "♛"
-    }
+const drop = (row, col) => {
     game.move(from[0], col + row)
+    chjson = game.exportJson()
     gl = true
     setTimeout(()=> {
-        var lc = chjson.castling.blackShort, rc = chjson.castling.blackLong
-        if (!game.exportJson().isFinished) {
+        if (!chjson.isFinished) {
             vl = Object.entries(game.aiMove(aidepth))[0]
-            var xf = cols.indexOf(vl[0][0])
-            var yf = rows.indexOf(vl[0][1])
-            var xt = cols.indexOf(vl[1][0])
-            var yt = rows.indexOf(vl[1][1])
-            var vmit = [table[yf][xf], tc[yf][xf]]
-            var vut = [table[yt][xt], tc[yt][xt]]
-            if (vmit[0]=='♚' && (yt == 7 || yt == 0)) {
-                if (lc && xt == 6)
-                    table[yt][7] = " ", tc[yt][7] = "n", table[yt][5] = "♜", tc[yt][5] = "b"
-                if (rc && xt == 2)
-                    table[yt][0] = " ", tc[yt][0] = "n", table[yt][3] = "♜", tc[yt][3] = "b"
-            }
-            table[yf][xf] = " "
-            tc[yf][xf] = "n"
-            table[yt][xt] = vmit[0]
-            tc[yt][xt] = vmit[1]
-            if (gl && vmit[0]=='♟' && yt == 7) {
-                table[yt][xt] = "♛"
-            }
-            gl = false
         }
         chjson = game.exportJson()
+        gl = false
     }, 500)
 }
 </script>
@@ -83,14 +51,14 @@ const drop = (i, j, row, col) => {
         {#each cols as col, j}
             <td class="s{(i + j) % 2} {!gl && pm.includes(col+row) ? 'x': ''}"
                 on:dragover={e => !gl && pm.includes(col+row) ? (e.preventDefault(), true): false}
-                on:drop={() => drop(i, j, row, col)}
+                on:drop={() => drop(row, col)}
                 >
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
                 <span 
                     on:dragstart={() => f(i, j, row, col)}
                     on:dragend={() => pm = []}
-                    class="{tc[i][j]} {!gl && vl[1] == col+row ? 'u' : ''}" 
-                    draggable={!gl && tc[i][j] == 'w'}>{table[i][j]}</span>
+                    class="{chjson.pieces[col+row]} {!gl && vl[1] == col+row ? 'u' : ''}" 
+                    draggable={!gl}>{getf(chjson.pieces[col+row])}</span>
             </td>
         {/each}
         <td class="o">{8-i}</td>
@@ -132,11 +100,11 @@ td span {
     font-size: 40px;
     display: inline-block;
 }
-td span.b {
+td span.r, td span.n, td span.b, td span.q, td span.k, td span.p {
     color: black;
     text-shadow: 1px 1px 7px white;
 }
-td span.w {
+td span.R, td span.N, td span.B, td span.Q, td span.K, td span.P {
     color: white;
     text-shadow: 1px 1px 7px black;
     cursor: grab;
